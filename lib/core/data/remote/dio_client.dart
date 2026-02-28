@@ -7,7 +7,7 @@ class DioClient {
   static Dio create() {
     final dio = Dio(
       BaseOptions(
-        baseUrl: 'https://api.dio.me',
+        baseUrl: 'https://dummyjson.com',
         connectTimeout: Duration(seconds: 10),
         receiveTimeout: Duration(seconds: 5),
         headers: {'Content-Type': 'application/json'},
@@ -42,5 +42,4 @@ class _LoginInterceptor extends Interceptor {
     handler.next(response);
   }
 }
-
 
