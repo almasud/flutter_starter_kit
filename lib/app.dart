@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_kit/core/constants/app_strings.dart';
-import 'package:flutter_starter_kit/core/router/app_router.dart';
 
-import 'core/theme/app_theme.dart';
+import 'core/presentation/constants/app_strings.dart';
+import 'core/presentation/router/app_router.dart';
+import 'core/presentation/theme/app_theme.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

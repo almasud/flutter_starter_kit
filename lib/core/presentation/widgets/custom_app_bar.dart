@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_starter_kit/core/router/app_router.dart';
 import 'package:go_router/go_router.dart';
+
+import '../router/app_router.dart';
 
 class AppToolBar extends StatefulWidget implements PreferredSizeWidget {
   const AppToolBar({

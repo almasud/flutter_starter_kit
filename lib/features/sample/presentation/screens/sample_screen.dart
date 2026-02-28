@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../shared/widgets/custom_app_bar.dart';
+import '../../../../core/presentation/widgets/custom_app_bar.dart';
+
 
 class SampleScreen extends StatefulWidget {
   const SampleScreen({super.key});
