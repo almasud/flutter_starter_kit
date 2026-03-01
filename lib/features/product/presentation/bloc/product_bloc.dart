@@ -12,10 +12,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   final GetProductsUseCase _getProductsUseCase;
 
-  Future<void> _onEvent(
-    ProductEvent event,
-    Emitter<ProductState> emit,
-  ) async {
+  Future<void> _onEvent(ProductEvent event, Emitter<ProductState> emit) async {
     await event.when(
       productsRequested: () async {
         emit(ProductState.loading(previousData: state.data));

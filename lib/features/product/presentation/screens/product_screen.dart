@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_starter_kit/core/di/injection.dart';
+import 'package:flutter_starter_kit/core/presentation/widgets/app_snack_bar.dart';
 import 'package:flutter_starter_kit/features/product/domain/models/product.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_event.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_state.dart';
+import 'package:flutter_starter_kit/features/product/presentation/widgets/product_shimmer_list.dart';
 
 import '../../../../core/presentation/widgets/custom_app_bar.dart';
 
@@ -14,54 +16,64 @@ class ProductScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => getIt<ProductBloc>()..add(const ProductEvent.productsRequested()),
+      create: (_) =>
+          getIt<ProductBloc>()..add(const ProductEvent.productsRequested()),
       child: Scaffold(
-        appBar: AppToolBar(
-          title: 'Products',
-          showBackButton: false,
-        ),
+        appBar: AppToolBar(title: 'Products', showBackButton: false),
         body: SafeArea(
-          child: BlocBuilder<ProductBloc, ProductState>(
-            builder: (context, state) {
-              return switch (state.status) {
-                ProductStatus.initial || ProductStatus.loading => const Center(
-                  child: CircularProgressIndicator(),
-                ),
-                ProductStatus.success => RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<ProductBloc>().add(const ProductEvent.productsRequested());
-                  },
-                  child: ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(12),
-                    itemCount: state.data.products.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final product = state.data.products[index];
-                      return _ProductCard(product: product);
+          child: BlocListener<ProductBloc, ProductState>(
+            listenWhen: (previous, current) =>
+                previous.status != current.status &&
+                current.status == ProductStatus.failure,
+            listener: (context, state) {
+              AppSnackBar.showError(context, state.message);
+            },
+            child: BlocBuilder<ProductBloc, ProductState>(
+              builder: (context, state) {
+                return switch (state.status) {
+                  ProductStatus.initial ||
+                  ProductStatus.loading => const ProductShimmerList(),
+                  ProductStatus.success => RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<ProductBloc>().add(
+                        const ProductEvent.productsRequested(),
+                      );
                     },
-                  ),
-                ),
-                ProductStatus.failure => Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(state.message, textAlign: TextAlign.center),
-                        const SizedBox(height: 12),
-                        FilledButton(
-                          onPressed: () {
-                            context.read<ProductBloc>().add(const ProductEvent.productsRequested());
-                          },
-                          child: const Text('Retry'),
-                        ),
-                      ],
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(12),
+                      itemCount: state.data.products.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final product = state.data.products[index];
+                        return _ProductCard(product: product);
+                      },
                     ),
                   ),
-                ),
-              };
-            },
+                  ProductStatus.failure => Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(state.message, textAlign: TextAlign.center),
+                          const SizedBox(height: 12),
+                          FilledButton(
+                            onPressed: () {
+                              context.read<ProductBloc>().add(
+                                const ProductEvent.productsRequested(),
+                              );
+                            },
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                };
+              },
+            ),
           ),
         ),
       ),

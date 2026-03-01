@@ -38,7 +38,7 @@ class _AppToolBarState extends State<AppToolBar> {
             children: [
               if (widget.showBackButton)
                 IconButton(
-                  onPressed: () => context.go(AppRouter.sample),
+                  onPressed: () => context.go(AppRouter.productPath),
                   icon: Icon(Icons.arrow_back, color: Colors.white),
                 )
               else

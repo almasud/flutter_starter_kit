@@ -29,4 +29,3 @@ final class UnknownError extends AppError {
   final String? message;
   final String? code;
 }
-

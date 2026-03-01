@@ -14,16 +14,13 @@ class DioClient {
       ),
     );
 
-    dio.interceptors.addAll([
-      _LoginInterceptor(),
-    ]);
+    dio.interceptors.addAll([_LoginInterceptor()]);
 
     return dio;
   }
 }
 
 class _LoginInterceptor extends Interceptor {
-
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     debugPrint('Request: ${options.method} ${options.path}');
@@ -38,8 +35,9 @@ class _LoginInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    debugPrint('Response: ${response.statusCode} ${response.requestOptions.path}');
+    debugPrint(
+      'Response: ${response.statusCode} ${response.requestOptions.path}',
+    );
     handler.next(response);
   }
 }
-

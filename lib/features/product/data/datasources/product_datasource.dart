@@ -15,11 +15,8 @@ class ProductDatasourceImpl extends ProductDatasource {
   ProductDatasourceImpl(this._dio);
 
   @override
-  Future<ApiResult<ProductDto, AppError>> getProducts() =>
-      safeApiCall(
-          () => _dio.get('/products'),
-          (json) => ProductDto.fromJson(
-            Map<String, dynamic>.from(json as Map),
-          ),
-      );
+  Future<ApiResult<ProductDto, AppError>> getProducts() => safeApiCall(
+    () => _dio.get('/products'),
+    (json) => ProductDto.fromJson(Map<String, dynamic>.from(json as Map)),
+  );
 }

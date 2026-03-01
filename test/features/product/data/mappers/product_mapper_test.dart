@@ -44,9 +44,7 @@ void main() {
     });
 
     test('uses safe defaults from dto defaults', () {
-      final dto = ProductDto(
-        products: [ProductItemDto()],
-      );
+      final dto = ProductDto(products: [ProductItemDto()]);
 
       final domain = dto.toDomain();
       final product = domain.products.first;

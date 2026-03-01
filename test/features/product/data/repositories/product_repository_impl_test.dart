@@ -57,9 +57,7 @@ void main() {
 
     test('forwards AppError on failure', () async {
       const appError = NetworkError(message: 'No internet');
-      final datasource = _FakeProductDatasource(
-        const Failure(appError),
-      );
+      final datasource = _FakeProductDatasource(const Failure(appError));
       final repository = ProductRepositoryImpl(datasource);
 
       final result = await repository.getProducts();
