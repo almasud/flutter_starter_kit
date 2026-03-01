@@ -6,7 +6,13 @@ import 'package:flutter_starter_kit/features/product/data/remote/model/dtos/prod
 import '../../../../core/domain/models/app_error.dart';
 
 abstract class ProductDatasource {
-  Future<ApiResult<ProductDto, AppError>> getProducts();
+  Future<ApiResult<ProductDto, AppError>> getProducts({
+    int skip = 0,
+    int limit = 20,
+    String query = '',
+    String sortBy = 'title',
+    String sortOrder = 'asc',
+  });
 }
 
 class ProductDatasourceImpl extends ProductDatasource {
@@ -15,8 +21,23 @@ class ProductDatasourceImpl extends ProductDatasource {
   ProductDatasourceImpl(this._dio);
 
   @override
-  Future<ApiResult<ProductDto, AppError>> getProducts() => safeApiCall(
-    () => _dio.get('/products'),
+  Future<ApiResult<ProductDto, AppError>> getProducts({
+    int skip = 0,
+    int limit = 20,
+    String query = '',
+    String sortBy = 'title',
+    String sortOrder = 'asc',
+  }) => safeApiCall(
+    () => _dio.get(
+      query.trim().isEmpty ? '/products' : '/products/search',
+      queryParameters: {
+        'skip': skip,
+        'limit': limit,
+        if (query.trim().isNotEmpty) 'q': query.trim(),
+        'sortBy': sortBy,
+        'order': sortOrder,
+      },
+    ),
     (json) => ProductDto.fromJson(Map<String, dynamic>.from(json as Map)),
   );
 }

@@ -11,8 +11,20 @@ class ProductRepositoryImpl extends ProductRepository {
   final ProductDatasource _datasource;
 
   @override
-  Future<ApiResult<ProductList, AppError>> getProducts() async {
-    final result = await _datasource.getProducts();
+  Future<ApiResult<ProductList, AppError>> getProducts({
+    int skip = 0,
+    int limit = 20,
+    String query = '',
+    String sortBy = 'title',
+    String sortOrder = 'asc',
+  }) async {
+    final result = await _datasource.getProducts(
+      skip: skip,
+      limit: limit,
+      query: query,
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
     return result.map((dto) => dto.toDomain());
   }
 }

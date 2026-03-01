@@ -11,29 +11,14 @@ abstract class ProductState with _$ProductState {
     @Default(ProductStatus.initial) ProductStatus status,
     @Default(ProductList(products: [], total: 0, skip: 0, limit: 0))
     ProductList data,
+    @Default(20) int pageSize,
+    @Default('') String query,
+    @Default('title') String sortBy,
+    @Default('asc') String sortOrder,
+    @Default(false) bool hasMore,
+    @Default(false) bool isLoadingMore,
     @Default('') String message,
   }) = _ProductState;
 
   factory ProductState.initial() => const ProductState();
-
-  factory ProductState.loading({ProductList? previousData}) => ProductState(
-    status: ProductStatus.loading,
-    data:
-        previousData ??
-        const ProductList(products: [], total: 0, skip: 0, limit: 0),
-  );
-
-  factory ProductState.success(ProductList data) =>
-      ProductState(status: ProductStatus.success, data: data);
-
-  factory ProductState.failure({
-    required String message,
-    ProductList? previousData,
-  }) => ProductState(
-    status: ProductStatus.failure,
-    data:
-        previousData ??
-        const ProductList(products: [], total: 0, skip: 0, limit: 0),
-    message: message,
-  );
 }

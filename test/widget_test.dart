@@ -9,9 +9,12 @@ import 'package:flutter_starter_kit/app.dart';
 import 'package:flutter_starter_kit/core/domain/models/api_result.dart';
 import 'package:flutter_starter_kit/core/domain/models/app_error.dart';
 import 'package:flutter_starter_kit/core/di/injection.dart';
+import 'package:flutter_starter_kit/core/presentation/router/auth_guard.dart';
 import 'package:flutter_starter_kit/features/auth/data/datasources/auth_datasource.dart';
+import 'package:flutter_starter_kit/features/auth/data/local/auth_session_store.dart';
 import 'package:flutter_starter_kit/features/auth/data/remote/model/dtos/auth_session_dto.dart';
 import 'package:flutter_starter_kit/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:flutter_starter_kit/features/auth/domain/models/auth_session.dart';
 import 'package:flutter_starter_kit/features/auth/domain/repositories/auth_repository.dart';
 import 'package:flutter_starter_kit/features/auth/domain/usecases/login_usecase.dart';
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
@@ -25,7 +28,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeProductDatasource extends ProductDatasource {
   @override
-  Future<ApiResult<ProductDto, AppError>> getProducts() async {
+  Future<ApiResult<ProductDto, AppError>> getProducts({
+    int skip = 0,
+    int limit = 20,
+    String query = '',
+    String sortBy = 'title',
+    String sortOrder = 'asc',
+  }) async {
     return Success(
       ProductDto(products: const [], total: 0, skip: 0, limit: 30),
     );
@@ -42,15 +51,38 @@ class _FakeAuthDatasource extends AuthDatasource {
   }
 }
 
+class _InMemoryAuthSessionStore extends AuthSessionStore {
+  AuthSession? _session;
+
+  @override
+  Future<void> clear() async {
+    _session = null;
+  }
+
+  @override
+  Future<AuthSession?> read() async {
+    return _session;
+  }
+
+  @override
+  Future<void> save(AuthSession session) async {
+    _session = session;
+  }
+}
+
 void main() {
   setUp(() async {
     await getIt.reset();
+    getIt.registerLazySingleton<AuthSessionStore>(
+      () => _InMemoryAuthSessionStore(),
+    );
+    getIt.registerLazySingleton<AuthGuard>(() => AuthGuard(getIt()));
     getIt.registerLazySingleton<AuthDatasource>(() => _FakeAuthDatasource());
     getIt.registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(getIt()),
     );
     getIt.registerLazySingleton<LoginUseCase>(() => LoginUseCase(getIt()));
-    getIt.registerFactory<AuthBloc>(() => AuthBloc(getIt()));
+    getIt.registerFactory<AuthBloc>(() => AuthBloc(getIt(), getIt()));
     getIt.registerLazySingleton<ProductDatasource>(
       () => _FakeProductDatasource(),
     );
@@ -67,7 +99,7 @@ void main() {
     await tester.pumpWidget(const App());
     await tester.pump();
 
-    expect(find.text('Login'), findsOneWidget);
+    expect(find.text('Sign in to continue.'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);
   });
 }

@@ -14,17 +14,69 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   Future<void> _onEvent(ProductEvent event, Emitter<ProductState> emit) async {
     await event.when(
-      productsRequested: () async {
-        emit(ProductState.loading(previousData: state.data));
-        final result = await _getProductsUseCase();
+      productsRequested: (query, sortBy, sortOrder, loadMore) async {
+        final activeQuery = (query ?? state.query).trim();
+        final activeSortBy = (sortBy ?? state.sortBy).trim();
+        final activeSortOrder = (sortOrder ?? state.sortOrder).trim();
+        final canLoadMore = loadMore && state.hasMore && !state.isLoadingMore;
+
+        if (loadMore && !canLoadMore) return;
+
+        if (canLoadMore) {
+          emit(
+            state.copyWith(
+              status: ProductStatus.success,
+              isLoadingMore: true,
+              message: '',
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              status: ProductStatus.loading,
+              query: activeQuery,
+              sortBy: activeSortBy,
+              sortOrder: activeSortOrder,
+              isLoadingMore: false,
+              message: '',
+            ),
+          );
+        }
+
+        final nextSkip = canLoadMore ? state.data.products.length : 0;
+        final result = await _getProductsUseCase(
+          skip: nextSkip,
+          limit: state.pageSize,
+          query: activeQuery,
+          sortBy: activeSortBy,
+          sortOrder: activeSortOrder,
+        );
+
         switch (result) {
           case Success(:final data):
-            emit(ProductState.success(data));
+            final mergedProducts = canLoadMore
+                ? [...state.data.products, ...data.products]
+                : data.products;
+            final mergedData = data.copyWith(products: mergedProducts);
+
+            emit(
+              state.copyWith(
+                status: ProductStatus.success,
+                data: mergedData,
+                query: activeQuery,
+                sortBy: activeSortBy,
+                sortOrder: activeSortOrder,
+                hasMore: mergedProducts.length < data.total,
+                isLoadingMore: false,
+                message: '',
+              ),
+            );
           case Failure(:final error):
             emit(
-              ProductState.failure(
+              state.copyWith(
+                status: ProductStatus.failure,
                 message: _mapError(error),
-                previousData: state.data,
+                isLoadingMore: false,
               ),
             );
         }

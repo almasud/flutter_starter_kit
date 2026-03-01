@@ -8,7 +8,19 @@ class GetProductsUseCase {
 
   final ProductRepository _repository;
 
-  Future<ApiResult<ProductList, AppError>> call() {
-    return _repository.getProducts();
+  Future<ApiResult<ProductList, AppError>> call({
+    int skip = 0,
+    int limit = 20,
+    String query = '',
+    String sortBy = 'title',
+    String sortOrder = 'asc',
+  }) {
+    return _repository.getProducts(
+      skip: skip,
+      limit: limit,
+      query: query,
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+    );
   }
 }

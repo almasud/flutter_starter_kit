@@ -12,7 +12,13 @@ class _FakeProductDatasource extends ProductDatasource {
   final ApiResult<ProductDto, AppError> _result;
 
   @override
-  Future<ApiResult<ProductDto, AppError>> getProducts() async => _result;
+  Future<ApiResult<ProductDto, AppError>> getProducts({
+    int skip = 0,
+    int limit = 20,
+    String query = '',
+    String sortBy = 'title',
+    String sortOrder = 'asc',
+  }) async => _result;
 }
 
 void main() {

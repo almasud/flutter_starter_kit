@@ -1,6 +1,9 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 
+import '../presentation/router/auth_guard.dart';
 import '../../features/auth/data/datasources/auth_datasource.dart';
+import '../../features/auth/data/local/auth_session_store.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/login_usecase.dart';
@@ -16,7 +19,12 @@ final getIt = GetIt.instance;
 
 Future<void> setupLocator() async {
   // Core
+  getIt.registerLazySingleton(() => const FlutterSecureStorage());
   getIt.registerLazySingleton(() => DioClient.create());
+  getIt.registerLazySingleton<AuthSessionStore>(
+    () => SecureAuthSessionStore(getIt()),
+  );
+  getIt.registerLazySingleton<AuthGuard>(() => AuthGuard(getIt()));
 
   // Auth Data Sources
   getIt.registerLazySingleton<AuthDatasource>(
@@ -32,7 +40,7 @@ Future<void> setupLocator() async {
   getIt.registerLazySingleton<LoginUseCase>(() => LoginUseCase(getIt()));
 
   // Auth Blocs
-  getIt.registerFactory<AuthBloc>(() => AuthBloc(getIt()));
+  getIt.registerFactory<AuthBloc>(() => AuthBloc(getIt(), getIt()));
 
   // Data Sources
   getIt.registerLazySingleton<ProductDatasource>(
@@ -51,4 +59,6 @@ Future<void> setupLocator() async {
 
   // Blocs
   getIt.registerFactory<ProductBloc>(() => ProductBloc(getIt()));
+
+  await getIt<AuthGuard>().restore();
 }
