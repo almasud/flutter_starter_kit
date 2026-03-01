@@ -1,6 +1,6 @@
 import 'package:flutter_starter_kit/features/product/data/remote/model/dtos/product_dto.dart';
-import 'package:flutter_starter_kit/features/product/domain/entities/product.dart';
-import 'package:flutter_starter_kit/features/product/domain/entities/product_list.dart';
+import 'package:flutter_starter_kit/features/product/domain/models/product.dart';
+import 'package:flutter_starter_kit/features/product/domain/models/product_list.dart';
 
 extension ProductDtoMapper on ProductDto {
   ProductList toDomain() {

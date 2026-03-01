@@ -4,7 +4,7 @@ import 'package:flutter_starter_kit/core/domain/models/app_error.dart';
 import 'package:flutter_starter_kit/features/product/data/datasources/product_datasource.dart';
 import 'package:flutter_starter_kit/features/product/data/remote/model/dtos/product_dto.dart';
 import 'package:flutter_starter_kit/features/product/data/repositories/product_repository_impl.dart';
-import 'package:flutter_starter_kit/features/product/domain/entities/product_list.dart';
+import 'package:flutter_starter_kit/features/product/domain/models/product_list.dart';
 
 class _FakeProductDatasource extends ProductDatasource {
   _FakeProductDatasource(this._result);

@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:flutter_starter_kit/features/product/domain/entities/product_list.dart';
+import 'package:flutter_starter_kit/features/product/domain/models/product_list.dart';
 
 part 'product_state.freezed.dart';
 

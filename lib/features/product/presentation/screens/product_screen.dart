@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_starter_kit/core/di/injection.dart';
-import 'package:flutter_starter_kit/features/product/domain/entities/product.dart';
+import 'package:flutter_starter_kit/features/product/domain/models/product.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_event.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_state.dart';
