@@ -27,11 +27,11 @@ Current files are placeholders; replace them with real app captures.
 
 | Login | Products |
 |---|---|
-| ![Login](docs/screenshots/login.png) | ![Products](docs/screenshots/products.png) |
+| <img src="docs/screenshots/login.png" width="240" alt="Login" /> | <img src="docs/screenshots/products.png" width="240" alt="Products" /> |
 
 | Search + Sort |
 |---|
-| ![Search and Sort](docs/screenshots/products_search_sort.png) |
+| <img src="docs/screenshots/products_search_sort.png" width="320" alt="Search and Sort" /> |
 
 ## Architecture
 
