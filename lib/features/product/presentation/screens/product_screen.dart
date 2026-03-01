@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_starter_kit/core/di/injection.dart';
+import 'package:flutter_starter_kit/core/presentation/router/app_router.dart';
+import 'package:flutter_starter_kit/core/presentation/router/auth_guard.dart';
 import 'package:flutter_starter_kit/core/presentation/widgets/app_snack_bar.dart';
 import 'package:flutter_starter_kit/features/product/domain/models/product.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_event.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_state.dart';
 import 'package:flutter_starter_kit/features/product/presentation/widgets/product_shimmer_list.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/presentation/widgets/custom_app_bar.dart';
 
@@ -43,7 +46,17 @@ class _ProductScreenState extends State<ProductScreen> {
       create: (_) =>
           getIt<ProductBloc>()..add(const ProductEvent.productsRequested()),
       child: Scaffold(
-        appBar: const AppToolBar(title: 'Products', showBackButton: false),
+        appBar: AppToolBar(
+          title: 'Products',
+          showBackButton: false,
+          actions: [
+            IconButton(
+              tooltip: 'Logout',
+              onPressed: _onLogout,
+              icon: const Icon(Icons.logout, color: Colors.white),
+            ),
+          ],
+        ),
         body: SafeArea(
           child: BlocListener<ProductBloc, ProductState>(
             listenWhen: (previous, current) =>
@@ -172,6 +185,12 @@ class _ProductScreenState extends State<ProductScreen> {
         .split(RegExp(r'\s+'))
         .where((token) => token.isNotEmpty)
         .join(' ');
+  }
+
+  Future<void> _onLogout() async {
+    await getIt<AuthGuard>().clearSession();
+    if (!mounted) return;
+    context.go(AppRouter.loginPath);
   }
 }
 
@@ -376,6 +395,17 @@ class _ProductCard extends StatelessWidget {
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
+                      ),
+                      const SizedBox(width: 10),
+                      Icon(
+                        Icons.star_rounded,
+                        size: 16,
+                        color: Colors.amber.shade700,
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        product.rating.toStringAsFixed(1),
+                        style: theme.textTheme.bodySmall,
                       ),
                       const Spacer(),
                       Text('Stock: ${product.stock}'),
