@@ -10,6 +10,7 @@ import 'package:flutter_starter_kit/features/product/domain/models/product.dart'
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_event.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_state.dart';
+import 'package:flutter_starter_kit/features/product/presentation/constants/product_strings.dart';
 import 'package:flutter_starter_kit/features/product/presentation/widgets/product_shimmer_list.dart';
 import 'package:go_router/go_router.dart';
 
@@ -47,11 +48,11 @@ class _ProductScreenState extends State<ProductScreen> {
           getIt<ProductBloc>()..add(const ProductEvent.productsRequested()),
       child: Scaffold(
         appBar: AppToolBar(
-          title: 'Products',
+          title: ProductStrings.products,
           showBackButton: false,
           actions: [
             IconButton(
-              tooltip: 'Logout',
+              tooltip: ProductStrings.logout,
               onPressed: _onLogout,
               icon: const Icon(Icons.logout, color: Colors.white),
             ),
@@ -135,7 +136,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                   );
                 },
-                child: const Text('Retry'),
+                child: const Text(ProductStrings.retry),
               ),
             ],
           ),
@@ -208,9 +209,9 @@ class _FilterBar extends StatelessWidget {
   final void Function(String value, ProductState state) onSearchSubmitted;
 
   static const _sortLabels = {
-    'title': 'Title',
-    'price': 'Price',
-    'rating': 'Rating',
+    'title': ProductStrings.sortTitle,
+    'price': ProductStrings.sortPrice,
+    'rating': ProductStrings.sortRating,
   };
 
   @override
@@ -223,7 +224,7 @@ class _FilterBar extends StatelessWidget {
           TextField(
             controller: searchController,
             decoration: InputDecoration(
-              hintText: 'Search by keyword',
+              hintText: ProductStrings.searchByKeyword,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
@@ -234,7 +235,7 @@ class _FilterBar extends StatelessWidget {
                 builder: (context, value, _) {
                   if (value.text.isEmpty) return const SizedBox.shrink();
                   return IconButton(
-                    tooltip: 'Clear search',
+                    tooltip: ProductStrings.clearSearch,
                     onPressed: () {
                       searchController.clear();
                       onSearchSubmitted('', state);
@@ -250,12 +251,15 @@ class _FilterBar extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              Text('Sort', style: Theme.of(context).textTheme.labelLarge),
+              Text(
+                ProductStrings.sort,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
               const Spacer(),
               Tooltip(
                 message: state.sortOrder == 'asc'
-                    ? 'Ascending order'
-                    : 'Descending order',
+                    ? ProductStrings.ascendingOrder
+                    : ProductStrings.descendingOrder,
                 child: FilledButton.tonalIcon(
                   onPressed: () {
                     context.read<ProductBloc>().add(
@@ -268,7 +272,9 @@ class _FilterBar extends StatelessWidget {
                   },
                   icon: const Icon(Icons.swap_vert_rounded),
                   label: Text(
-                    state.sortOrder == 'asc' ? 'ASC' : 'DESC',
+                    state.sortOrder == 'asc'
+                        ? ProductStrings.asc
+                        : ProductStrings.desc,
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                 ),
@@ -333,7 +339,7 @@ class _LoadMoreSection extends StatelessWidget {
             const ProductEvent.productsRequested(loadMore: true),
           );
         },
-        child: const Text('Load more'),
+        child: const Text(ProductStrings.loadMore),
       ),
     );
   }
@@ -408,7 +414,7 @@ class _ProductCard extends StatelessWidget {
                         style: theme.textTheme.bodySmall,
                       ),
                       const Spacer(),
-                      Text('Stock: ${product.stock}'),
+                      Text('${ProductStrings.stockPrefix}${product.stock}'),
                     ],
                   ),
                 ],

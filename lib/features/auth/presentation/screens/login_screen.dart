@@ -7,6 +7,7 @@ import 'package:flutter_starter_kit/core/presentation/widgets/app_snack_bar.dart
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
+import 'package:flutter_starter_kit/features/auth/presentation/constants/auth_strings.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -77,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Text(
-                                    'Sign in to continue.',
+                                    AuthStrings.signInToContinue,
                                     style: Theme.of(
                                       context,
                                     ).textTheme.bodyMedium,
@@ -87,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          'Demo credentials: emilys / emilyspass',
+                                          AuthStrings.demoCredentials,
                                           style: Theme.of(
                                             context,
                                           ).textTheme.bodySmall,
@@ -98,11 +99,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ? null
                                             : () {
                                                 _usernameController.text =
-                                                    'emilys';
+                                                    AuthStrings.demoUsername;
                                                 _passwordController.text =
-                                                    'emilyspass';
+                                                    AuthStrings.demoPassword;
                                               },
-                                        child: const Text('Use demo'),
+                                        child: const Text(AuthStrings.useDemo),
                                       ),
                                     ],
                                   ),
@@ -112,16 +113,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                     enabled: !isSubmitting,
                                     textInputAction: TextInputAction.next,
                                     decoration: const InputDecoration(
-                                      labelText: 'Username',
+                                      labelText: AuthStrings.username,
                                       border: OutlineInputBorder(),
                                     ),
                                     validator: (value) {
                                       final trimmed = value?.trim() ?? '';
                                       if (trimmed.isEmpty) {
-                                        return 'Username is required';
+                                        return AuthStrings.usernameRequired;
                                       }
                                       if (trimmed.length < 3) {
-                                        return 'Username should be at least 3 characters';
+                                        return AuthStrings.usernameTooShort;
                                       }
                                       return null;
                                     },
@@ -135,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onFieldSubmitted: (_) =>
                                         _submit(context, isSubmitting),
                                     decoration: InputDecoration(
-                                      labelText: 'Password',
+                                      labelText: AuthStrings.password,
                                       border: const OutlineInputBorder(),
                                       suffixIcon: IconButton(
                                         onPressed: () {
@@ -154,10 +155,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     validator: (value) {
                                       final trimmed = value?.trim() ?? '';
                                       if (trimmed.isEmpty) {
-                                        return 'Password is required';
+                                        return AuthStrings.passwordRequired;
                                       }
                                       if (trimmed.length < 6) {
-                                        return 'Password should be at least 6 characters';
+                                        return AuthStrings.passwordTooShort;
                                       }
                                       return null;
                                     },
@@ -175,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               size: 20,
                                               strokeWidth: 2,
                                             )
-                                          : const Text('Sign In'),
+                                          : const Text(AuthStrings.signIn),
                                     ),
                                   ),
                                 ],

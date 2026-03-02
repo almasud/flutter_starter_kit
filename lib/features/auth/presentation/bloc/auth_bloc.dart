@@ -5,6 +5,7 @@ import 'package:flutter_starter_kit/core/presentation/router/auth_guard.dart';
 import 'package:flutter_starter_kit/features/auth/domain/usecases/login_usecase.dart';
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
+import 'package:flutter_starter_kit/features/auth/presentation/constants/auth_strings.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this._loginUseCase, this._authGuard) : super(const AuthState()) {
@@ -25,7 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(
         state.copyWith(
           status: AuthStatus.failure,
-          message: 'Username and password are required',
+          message: AuthStrings.usernameAndPasswordRequired,
         ),
       );
       return;
@@ -54,11 +55,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   String _mapError(AppError error) {
     return switch (error) {
-      NetworkError(:final message) => message ?? 'Network error',
-      UnauthorizedError(:final message) => message ?? 'Unauthorized',
-      ValidationError(:final message) => message ?? 'Validation error',
-      ServerError(:final message) => message ?? 'Server error',
-      UnknownError(:final message) => message ?? 'Unknown error',
+      NetworkError(:final message) => message ?? AuthStrings.networkError,
+      UnauthorizedError(:final message) => message ?? AuthStrings.unauthorized,
+      ValidationError(:final message) => message ?? AuthStrings.validationError,
+      ServerError(:final message) => message ?? AuthStrings.serverError,
+      UnknownError(:final message) => message ?? AuthStrings.unknownError,
     };
   }
 }
