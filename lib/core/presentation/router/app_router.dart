@@ -3,24 +3,24 @@ import 'package:flutter_starter_kit/features/product/presentation/screens/produc
 import 'package:go_router/go_router.dart';
 
 class AppRouter {
-  // Make the class singleton
   AppRouter._();
 
   static const loginPath = '/login';
   static const productPath = '/product';
 
-  static final router = GoRouter(
-    initialLocation: loginPath,
-    routes: [
-      GoRoute(
-        path: loginPath,
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: productPath,
-        builder: (context, state) => const ProductScreen(),
-      ),
-      // Add more route here
-    ],
-  );
+  static GoRouter createRouter({required bool isAuthenticated}) {
+    return GoRouter(
+      initialLocation: isAuthenticated ? productPath : loginPath,
+      routes: [
+        GoRoute(
+          path: loginPath,
+          builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: productPath,
+          builder: (context, state) => const ProductScreen(),
+        ),
+      ],
+    );
+  }
 }

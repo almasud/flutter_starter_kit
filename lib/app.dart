@@ -5,7 +5,9 @@ import 'core/presentation/router/app_router.dart';
 import 'core/presentation/theme/app_theme.dart';
 
 class App extends StatelessWidget {
-  const App({super.key});
+  const App({required this.isAuthenticated, super.key});
+
+  final bool isAuthenticated;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class App extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      routerConfig: AppRouter.router,
+      routerConfig: AppRouter.createRouter(isAuthenticated: isAuthenticated),
     );
   }
 }

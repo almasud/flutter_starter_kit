@@ -7,4 +7,8 @@ abstract class AuthRepository {
     required String username,
     required String password,
   });
+
+  Future<AuthSession?> getSavedSession();
+
+  Future<void> clearSavedSession();
 }

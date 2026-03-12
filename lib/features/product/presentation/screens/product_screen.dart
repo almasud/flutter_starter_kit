@@ -17,41 +17,30 @@ class ProductScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          getIt<ProductBloc>()..add(const ProductEvent.productsRequested()),
+          getIt<ProductBloc>()..add(const ProductEvent.productsStarted()),
       child: Scaffold(
         appBar: AppToolBar(title: 'Products', showBackButton: false),
         body: SafeArea(
           child: BlocListener<ProductBloc, ProductState>(
             listenWhen: (previous, current) =>
-                previous.status != current.status &&
-                current.status == ProductStatus.failure,
+                previous.message != current.message,
             listener: (context, state) {
-              AppSnackBar.showError(context, state.message);
+              if (state.message.isNotEmpty) {
+                AppSnackBar.showError(context, state.message);
+              }
             },
             child: BlocBuilder<ProductBloc, ProductState>(
               builder: (context, state) {
-                return switch (state.status) {
-                  ProductStatus.initial ||
-                  ProductStatus.loading => const ProductShimmerList(),
-                  ProductStatus.success => RefreshIndicator(
-                    onRefresh: () async {
-                      context.read<ProductBloc>().add(
-                        const ProductEvent.productsRequested(),
-                      );
-                    },
-                    child: ListView.separated(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.all(12),
-                      itemCount: state.data.products.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 10),
-                      itemBuilder: (context, index) {
-                        final product = state.data.products[index];
-                        return _ProductCard(product: product);
-                      },
-                    ),
-                  ),
-                  ProductStatus.failure => Center(
+                final hasData = state.data.products.isNotEmpty;
+
+                if (!hasData &&
+                    (state.status == ProductStatus.initial ||
+                        state.status == ProductStatus.loading)) {
+                  return const ProductShimmerList();
+                }
+
+                if (!hasData && state.status == ProductStatus.failure) {
+                  return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -62,7 +51,7 @@ class ProductScreen extends StatelessWidget {
                           FilledButton(
                             onPressed: () {
                               context.read<ProductBloc>().add(
-                                const ProductEvent.productsRequested(),
+                                const ProductEvent.productsStarted(),
                               );
                             },
                             child: const Text('Retry'),
@@ -70,14 +59,90 @@ class ProductScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                };
+                  );
+                }
+
+                return Column(
+                  children: [
+                    if (state.isRefreshing) const LinearProgressIndicator(),
+                    if (state.isStale || state.lastUpdatedAt != null)
+                      _CacheStatusBanner(
+                        isStale: state.isStale,
+                        lastUpdatedAt: state.lastUpdatedAt,
+                      ),
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<ProductBloc>().add(
+                            const ProductEvent.productsRefreshed(),
+                          );
+                        },
+                        child: ListView.separated(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.all(12),
+                          itemCount: state.data.products.length,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 10),
+                          itemBuilder: (context, index) {
+                            final product = state.data.products[index];
+                            return _ProductCard(product: product);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                );
               },
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+class _CacheStatusBanner extends StatelessWidget {
+  const _CacheStatusBanner({
+    required this.isStale,
+    required this.lastUpdatedAt,
+  });
+
+  final bool isStale;
+  final DateTime? lastUpdatedAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final lastUpdatedLabel = lastUpdatedAt == null
+        ? 'Unknown'
+        : _formatDateTime(lastUpdatedAt!);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      color: isStale
+          ? theme.colorScheme.errorContainer
+          : theme.colorScheme.surfaceContainerHighest,
+      child: Text(
+        isStale
+            ? 'Showing cached products. Last updated $lastUpdatedLabel.'
+            : 'Last updated $lastUpdatedLabel.',
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: isStale
+              ? theme.colorScheme.onErrorContainer
+              : theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+
+  String _formatDateTime(DateTime value) {
+    final local = value.toLocal();
+    final month = local.month.toString().padLeft(2, '0');
+    final day = local.day.toString().padLeft(2, '0');
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    return '${local.year}-$month-$day $hour:$minute';
   }
 }
 

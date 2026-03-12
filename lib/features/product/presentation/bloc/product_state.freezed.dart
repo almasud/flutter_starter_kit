@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ProductState {
 
- ProductStatus get status; ProductList get data; String get message;
+ ProductStatus get status; ProductList get data; String get message; bool get isRefreshing; bool get isStale; DateTime? get lastUpdatedAt;
 /// Create a copy of ProductState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ProductStateCopyWith<ProductState> get copyWith => _$ProductStateCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductState&&(identical(other.status, status) || other.status == status)&&(identical(other.data, data) || other.data == data)&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductState&&(identical(other.status, status) || other.status == status)&&(identical(other.data, data) || other.data == data)&&(identical(other.message, message) || other.message == message)&&(identical(other.isRefreshing, isRefreshing) || other.isRefreshing == isRefreshing)&&(identical(other.isStale, isStale) || other.isStale == isStale)&&(identical(other.lastUpdatedAt, lastUpdatedAt) || other.lastUpdatedAt == lastUpdatedAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,data,message);
+int get hashCode => Object.hash(runtimeType,status,data,message,isRefreshing,isStale,lastUpdatedAt);
 
 @override
 String toString() {
-  return 'ProductState(status: $status, data: $data, message: $message)';
+  return 'ProductState(status: $status, data: $data, message: $message, isRefreshing: $isRefreshing, isStale: $isStale, lastUpdatedAt: $lastUpdatedAt)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ProductStateCopyWith<$Res>  {
   factory $ProductStateCopyWith(ProductState value, $Res Function(ProductState) _then) = _$ProductStateCopyWithImpl;
 @useResult
 $Res call({
- ProductStatus status, ProductList data, String message
+ ProductStatus status, ProductList data, String message, bool isRefreshing, bool isStale, DateTime? lastUpdatedAt
 });
 
 
@@ -62,12 +62,15 @@ class _$ProductStateCopyWithImpl<$Res>
 
 /// Create a copy of ProductState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? data = null,Object? message = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? data = null,Object? message = null,Object? isRefreshing = null,Object? isStale = null,Object? lastUpdatedAt = freezed,}) {
   return _then(_self.copyWith(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as ProductStatus,data: null == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
 as ProductList,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+as String,isRefreshing: null == isRefreshing ? _self.isRefreshing : isRefreshing // ignore: cast_nullable_to_non_nullable
+as bool,isStale: null == isStale ? _self.isStale : isStale // ignore: cast_nullable_to_non_nullable
+as bool,lastUpdatedAt: freezed == lastUpdatedAt ? _self.lastUpdatedAt : lastUpdatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 /// Create a copy of ProductState
@@ -161,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProductStatus status,  ProductList data,  String message)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProductStatus status,  ProductList data,  String message,  bool isRefreshing,  bool isStale,  DateTime? lastUpdatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductState() when $default != null:
-return $default(_that.status,_that.data,_that.message);case _:
+return $default(_that.status,_that.data,_that.message,_that.isRefreshing,_that.isStale,_that.lastUpdatedAt);case _:
   return orElse();
 
 }
@@ -182,10 +185,10 @@ return $default(_that.status,_that.data,_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProductStatus status,  ProductList data,  String message)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProductStatus status,  ProductList data,  String message,  bool isRefreshing,  bool isStale,  DateTime? lastUpdatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _ProductState():
-return $default(_that.status,_that.data,_that.message);case _:
+return $default(_that.status,_that.data,_that.message,_that.isRefreshing,_that.isStale,_that.lastUpdatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +205,10 @@ return $default(_that.status,_that.data,_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProductStatus status,  ProductList data,  String message)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProductStatus status,  ProductList data,  String message,  bool isRefreshing,  bool isStale,  DateTime? lastUpdatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductState() when $default != null:
-return $default(_that.status,_that.data,_that.message);case _:
+return $default(_that.status,_that.data,_that.message,_that.isRefreshing,_that.isStale,_that.lastUpdatedAt);case _:
   return null;
 
 }
@@ -217,12 +220,15 @@ return $default(_that.status,_that.data,_that.message);case _:
 
 
 class _ProductState implements ProductState {
-  const _ProductState({this.status = ProductStatus.initial, this.data = const ProductList(products: [], total: 0, skip: 0, limit: 0), this.message = ''});
+  const _ProductState({this.status = ProductStatus.initial, this.data = const ProductList(products: [], total: 0, skip: 0, limit: 0), this.message = '', this.isRefreshing = false, this.isStale = false, this.lastUpdatedAt});
   
 
 @override@JsonKey() final  ProductStatus status;
 @override@JsonKey() final  ProductList data;
 @override@JsonKey() final  String message;
+@override@JsonKey() final  bool isRefreshing;
+@override@JsonKey() final  bool isStale;
+@override final  DateTime? lastUpdatedAt;
 
 /// Create a copy of ProductState
 /// with the given fields replaced by the non-null parameter values.
@@ -234,16 +240,16 @@ _$ProductStateCopyWith<_ProductState> get copyWith => __$ProductStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductState&&(identical(other.status, status) || other.status == status)&&(identical(other.data, data) || other.data == data)&&(identical(other.message, message) || other.message == message));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductState&&(identical(other.status, status) || other.status == status)&&(identical(other.data, data) || other.data == data)&&(identical(other.message, message) || other.message == message)&&(identical(other.isRefreshing, isRefreshing) || other.isRefreshing == isRefreshing)&&(identical(other.isStale, isStale) || other.isStale == isStale)&&(identical(other.lastUpdatedAt, lastUpdatedAt) || other.lastUpdatedAt == lastUpdatedAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,status,data,message);
+int get hashCode => Object.hash(runtimeType,status,data,message,isRefreshing,isStale,lastUpdatedAt);
 
 @override
 String toString() {
-  return 'ProductState(status: $status, data: $data, message: $message)';
+  return 'ProductState(status: $status, data: $data, message: $message, isRefreshing: $isRefreshing, isStale: $isStale, lastUpdatedAt: $lastUpdatedAt)';
 }
 
 
@@ -254,7 +260,7 @@ abstract mixin class _$ProductStateCopyWith<$Res> implements $ProductStateCopyWi
   factory _$ProductStateCopyWith(_ProductState value, $Res Function(_ProductState) _then) = __$ProductStateCopyWithImpl;
 @override @useResult
 $Res call({
- ProductStatus status, ProductList data, String message
+ ProductStatus status, ProductList data, String message, bool isRefreshing, bool isStale, DateTime? lastUpdatedAt
 });
 
 
@@ -271,12 +277,15 @@ class __$ProductStateCopyWithImpl<$Res>
 
 /// Create a copy of ProductState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? data = null,Object? message = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? data = null,Object? message = null,Object? isRefreshing = null,Object? isStale = null,Object? lastUpdatedAt = freezed,}) {
   return _then(_ProductState(
 status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as ProductStatus,data: null == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
 as ProductList,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String,
+as String,isRefreshing: null == isRefreshing ? _self.isRefreshing : isRefreshing // ignore: cast_nullable_to_non_nullable
+as bool,isStale: null == isStale ? _self.isStale : isStale // ignore: cast_nullable_to_non_nullable
+as bool,lastUpdatedAt: freezed == lastUpdatedAt ? _self.lastUpdatedAt : lastUpdatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

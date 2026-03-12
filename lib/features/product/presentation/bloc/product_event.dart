@@ -4,5 +4,7 @@ part 'product_event.freezed.dart';
 
 @freezed
 abstract class ProductEvent with _$ProductEvent {
-  const factory ProductEvent.productsRequested() = _ProductsRequested;
+  const factory ProductEvent.productsStarted() = _ProductsStarted;
+
+  const factory ProductEvent.productsRefreshed() = _ProductsRefreshed;
 }
