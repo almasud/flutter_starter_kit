@@ -3,6 +3,10 @@ import 'package:flutter_starter_kit/features/auth/domain/models/auth_session.dar
 
 extension AuthSessionDtoMapper on AuthSessionDto {
   AuthSession toDomain() {
-    return AuthSession(userId: userId, username: username, token: token);
+    return AuthSession(
+      userId: userId,
+      username: username,
+      token: accessToken.isNotEmpty ? accessToken : token,
+    );
   }
 }

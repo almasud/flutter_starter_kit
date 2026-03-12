@@ -11,6 +11,12 @@ abstract class ProductState with _$ProductState {
     @Default(ProductStatus.initial) ProductStatus status,
     @Default(ProductList(products: [], total: 0, skip: 0, limit: 0))
     ProductList data,
+    @Default(20) int pageSize,
+    @Default('') String query,
+    @Default('title') String sortBy,
+    @Default('asc') String sortOrder,
+    @Default(false) bool hasMore,
+    @Default(false) bool isLoadingMore,
     @Default('') String message,
     @Default(false) bool isRefreshing,
     @Default(false) bool isStale,

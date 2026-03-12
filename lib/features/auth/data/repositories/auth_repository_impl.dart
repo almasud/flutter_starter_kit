@@ -1,16 +1,16 @@
 import 'package:flutter_starter_kit/core/domain/models/api_result.dart';
 import 'package:flutter_starter_kit/core/domain/models/app_error.dart';
 import 'package:flutter_starter_kit/features/auth/data/datasources/auth_datasource.dart';
-import 'package:flutter_starter_kit/features/auth/data/local/session_storage.dart';
+import 'package:flutter_starter_kit/features/auth/data/local/auth_session_store.dart';
 import 'package:flutter_starter_kit/features/auth/data/mappers/auth_mapper.dart';
 import 'package:flutter_starter_kit/features/auth/domain/models/auth_session.dart';
 import 'package:flutter_starter_kit/features/auth/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl extends AuthRepository {
-  AuthRepositoryImpl(this._datasource, this._sessionStorage);
+  AuthRepositoryImpl(this._datasource, this._sessionStore);
 
   final AuthDatasource _datasource;
-  final SessionStorage _sessionStorage;
+  final AuthSessionStore _sessionStore;
 
   @override
   Future<ApiResult<AuthSession, AppError>> login({
@@ -24,7 +24,7 @@ class AuthRepositoryImpl extends AuthRepository {
     switch (result) {
       case Success(:final data):
         final session = data.toDomain();
-        await _sessionStorage.save(session);
+        await _sessionStore.save(session);
         return Success(session);
       case Failure(:final error):
         return Failure(error);
@@ -33,11 +33,11 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<AuthSession?> getSavedSession() {
-    return _sessionStorage.read();
+    return _sessionStore.read();
   }
 
   @override
   Future<void> clearSavedSession() {
-    return _sessionStorage.clear();
+    return _sessionStore.clear();
   }
 }

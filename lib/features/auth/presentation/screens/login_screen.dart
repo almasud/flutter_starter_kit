@@ -4,10 +4,10 @@ import 'package:flutter_starter_kit/core/di/injection.dart';
 import 'package:flutter_starter_kit/core/presentation/router/app_router.dart';
 import 'package:flutter_starter_kit/core/presentation/widgets/app_loading.dart';
 import 'package:flutter_starter_kit/core/presentation/widgets/app_snack_bar.dart';
-import 'package:flutter_starter_kit/core/presentation/widgets/custom_app_bar.dart';
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter_starter_kit/features/auth/presentation/bloc/auth_state.dart';
+import 'package:flutter_starter_kit/features/auth/presentation/constants/auth_strings.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,6 +18,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   late final TextEditingController _usernameController;
   late final TextEditingController _passwordController;
   bool _isPasswordVisible = false;
@@ -41,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocProvider(
       create: (_) => getIt<AuthBloc>(),
       child: Scaffold(
-        appBar: const AppToolBar(title: 'Login', showBackButton: false),
         body: SafeArea(
           child: BlocListener<AuthBloc, AuthState>(
             listenWhen: (previous, current) =>
@@ -58,78 +58,152 @@ class _LoginScreenState extends State<LoginScreen> {
               builder: (context, state) {
                 final isSubmitting = state.status == AuthStatus.submitting;
 
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 12),
-                      Text(
-                        'Use valid DummyJSON credentials to continue.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Example: username emilys, password emilyspass',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 24),
-                      TextField(
-                        controller: _usernameController,
-                        enabled: !isSubmitting,
-                        decoration: const InputDecoration(
-                          labelText: 'Username',
-                          border: OutlineInputBorder(),
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight - 32,
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: _passwordController,
-                        enabled: !isSubmitting,
-                        obscureText: !_isPasswordVisible,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          border: const OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                            icon: Icon(
-                              _isPasswordVisible
-                                  ? Icons.visibility_off
-                                  : Icons.visibility,
+                        child: Center(
+                          child: SizedBox(
+                            width: 420,
+                            child: Form(
+                              key: _formKey,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text(
+                                    AuthStrings.signInToContinue,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          AuthStrings.demoCredentials,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodySmall,
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: isSubmitting
+                                            ? null
+                                            : () {
+                                                _usernameController.text =
+                                                    AuthStrings.demoUsername;
+                                                _passwordController.text =
+                                                    AuthStrings.demoPassword;
+                                              },
+                                        child: const Text(AuthStrings.useDemo),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 24),
+                                  TextFormField(
+                                    controller: _usernameController,
+                                    enabled: !isSubmitting,
+                                    textInputAction: TextInputAction.next,
+                                    decoration: const InputDecoration(
+                                      labelText: AuthStrings.username,
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    validator: (value) {
+                                      final trimmed = value?.trim() ?? '';
+                                      if (trimmed.isEmpty) {
+                                        return AuthStrings.usernameRequired;
+                                      }
+                                      if (trimmed.length < 3) {
+                                        return AuthStrings.usernameTooShort;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                  TextFormField(
+                                    controller: _passwordController,
+                                    enabled: !isSubmitting,
+                                    obscureText: !_isPasswordVisible,
+                                    textInputAction: TextInputAction.done,
+                                    onFieldSubmitted: (_) =>
+                                        _submit(context, isSubmitting),
+                                    decoration: InputDecoration(
+                                      labelText: AuthStrings.password,
+                                      border: const OutlineInputBorder(),
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _isPasswordVisible =
+                                                !_isPasswordVisible;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          _isPasswordVisible
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                        ),
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      final trimmed = value?.trim() ?? '';
+                                      if (trimmed.isEmpty) {
+                                        return AuthStrings.passwordRequired;
+                                      }
+                                      if (trimmed.length < 6) {
+                                        return AuthStrings.passwordTooShort;
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                    height: 48,
+                                    child: FilledButton(
+                                      onPressed: isSubmitting
+                                          ? null
+                                          : () =>
+                                                _submit(context, isSubmitting),
+                                      child: isSubmitting
+                                          ? const AppLoading(
+                                              size: 20,
+                                              strokeWidth: 2,
+                                            )
+                                          : const Text(AuthStrings.signIn),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        height: 48,
-                        child: FilledButton(
-                          onPressed: isSubmitting
-                              ? null
-                              : () {
-                                  context.read<AuthBloc>().add(
-                                    LoginSubmitted(
-                                      username: _usernameController.text,
-                                      password: _passwordController.text,
-                                    ),
-                                  );
-                                },
-                          child: isSubmitting
-                              ? const AppLoading(size: 20, strokeWidth: 2)
-                              : const Text('Sign In'),
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _submit(BuildContext context, bool isSubmitting) {
+    if (isSubmitting) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    context.read<AuthBloc>().add(
+      LoginSubmitted(
+        username: _usernameController.text,
+        password: _passwordController.text,
       ),
     );
   }

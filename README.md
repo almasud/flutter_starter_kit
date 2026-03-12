@@ -1,109 +1,176 @@
 # Flutter Starter Kit
 
-Opinionated Flutter starter kit with a clean, scalable structure and one
-working sample feature (`product`) that demonstrates the end-to-end flow.
+Flutter starter template designed for rapid feature delivery with
+clear architecture and production-style conventions.
 
-## What This Project Includes
+## Overview
 
-- Layered architecture: `data` / `domain` / `presentation`
-- Feature-first folder structure (`features/product`)
-- Dependency injection with `get_it`
-- Declarative routing with `go_router`
-- Networking with `dio`
-- Typed API result and error model (`ApiResult`, `AppError`)
-- DTO to domain mapping
-- State management with `flutter_bloc`
-- Model and state generation using `freezed` + `json_serializable`
-- Unit and widget tests
+This project is a clean-architecture Flutter starter kit with two sample
+features:
 
-## Architecture Overview
+- `auth`: login flow with persisted secure session
+- `product`: list flow with keyword search, sort, order toggle, pull-to-refresh,
+  and pagination
 
-`lib/core`
-- Shared app setup and cross-cutting concerns
-- DI container (`core/di/injection.dart`)
-- Router (`core/presentation/router/app_router.dart`)
-- API client and safe call wrapper (`core/data/remote`)
-- App theme and common widgets
+It is intentionally structured to help you start coding quickly while
+demonstrating scalable engineering practices.
 
-`lib/features/product`
-- `data`: remote DTOs, datasource, repository implementation, mappers
-- `domain`: entities/models, repository contract, use case
-- `presentation`: Bloc, events/states, screen UI
+## Screenshots
 
-## Current Feature Scope
+Screenshots are loaded from `docs/screenshots/`:
 
-Implemented sample features:
-- Auth/login screen using DummyJSON `POST /auth/login`
-- Login state handling with `flutter_bloc`
-- Route transition from login to product list on success
-- Product list screen
-- Fetch products from `https://dummyjson.com/products`
-- Loading, success, and failure states
-- Pull-to-refresh and retry UI
+- `login.png`
+- `products.png`
+- `products_search_sort.png`
+
+Current files are placeholders; replace them with real app captures.
+
+| Login | Products |
+|---|---|
+| <img src="docs/screenshots/login.png" width="240" alt="Login" /> | <img src="docs/screenshots/products.png" width="240" alt="Products" /> |
+
+| Search + Sort |
+|---|
+| <img src="docs/screenshots/products_search_sort.png" width="320" alt="Search and Sort" /> |
+
+## Architecture
+
+### Layered design per feature
+
+- `data`: DTOs, datasources, repository implementations, mappers
+- `domain`: models, repository contracts, use cases
+- `presentation`: UI, BLoC, events, states
+
+### Core modules
+
+- `core/config`: environment/flavor setup (`APP_FLAVOR`, `API_BASE_URL`)
+- `core/data/remote`: Dio client, interceptors, safe API call wrapper
+- `core/di`: dependency registration with `get_it`
+- `core/presentation/router`: `go_router` routes and auth guard
+- `core/domain/models`: typed `ApiResult` and `AppError`
 
 ## Project Structure
 
 ```text
-lib/
-  app.dart
-  main.dart
-  core/
-    data/
-    di/
-    domain/
-    presentation/
-  features/
-    product/
-      data/
-      domain/
-      presentation/
-test/
-  features/
-    product/
+.
+├── lib
+│   ├── app.dart
+│   ├── main.dart
+│   ├── core
+│   │   ├── config
+│   │   ├── data
+│   │   │   └── remote
+│   │   ├── di
+│   │   ├── domain
+│   │   │   └── models
+│   │   └── presentation
+│   │       ├── constants
+│   │       ├── router
+│   │       ├── theme
+│   │       └── widgets
+│   └── features
+│       ├── auth
+│       │   ├── data
+│       │   ├── domain
+│       │   └── presentation
+│       └── product
+│           ├── data
+│           ├── domain
+│           └── presentation
+├── test
+│   └── features
+│       ├── auth
+│       └── product
+└── docs
+    └── screenshots
 ```
 
-## Requirements
+## Tech Stack / Libraries
+
+- Routing: `go_router`
+- State management: `flutter_bloc`
+- Networking: `dio`
+- Dependency injection: `get_it`
+- Secure storage: `flutter_secure_storage`
+- Model generation: `freezed`, `json_serializable`
+- Skeleton loading: `shimmer`
+- Testing: `flutter_test`
+
+## Implemented Capabilities
+
+### Auth
+
+- Login request (`POST /auth/login`)
+- Form validation
+- Secure session persistence
+- Guarded route redirect (unauthenticated -> login)
+
+### Product
+
+- Product list request (`GET /products`)
+- Keyword search with debounce
+- Sort field chips (`Title`, `Price`, `Rating`)
+- Order toggle (`ASC` / `DESC`)
+- Pull-to-refresh and load-more pagination
+- Loading, success, and failure states
+
+## Error Handling
+
+- Unified result model via `ApiResult<Success|Failure>`
+- Typed error mapping (`NetworkError`, `ValidationError`, `UnauthorizedError`,
+  `ServerError`, `UnknownError`)
+- Centralized safe API wrapper (`safe_api_call.dart`)
+
+## Environment Configuration
+
+Set flavor via `dart-define`:
+
+```bash
+flutter run --dart-define=APP_FLAVOR=dev
+flutter run --dart-define=APP_FLAVOR=staging
+flutter run --dart-define=APP_FLAVOR=prod
+```
+
+Override base URL:
+
+```bash
+flutter run --dart-define=API_BASE_URL=https://api.example.com
+```
+
+## Setup
+
+### Requirements
 
 - Flutter SDK (stable)
 - Dart SDK `^3.11.0`
 
-## Getting Started
+### Install and run
 
 ```bash
 flutter pub get
 flutter run
 ```
 
-## Run Tests
+## Quality Checks
 
 ```bash
+flutter analyze
 flutter test
 ```
 
 ## Code Generation
 
-Run this after updating `freezed`/`json_serializable` models:
+Run when `freezed`/`json_serializable` models or states change:
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-## Main Dependencies
-
-- `go_router`
-- `dio`
-- `get_it`
-- `flutter_bloc`
-- `freezed_annotation`
-- `json_annotation`
-
-Dev dependencies:
-- `build_runner`
-- `freezed`
-- `json_serializable`
-
 ## Notes
 
-This repository is positioned as a starter kit, but it already includes a
-fully wired sample feature to demonstrate architecture and development
-conventions for future modules.
+This template is optimized to start new app features quickly:
+
+- clear feature boundaries
+- testable architecture
+- practical patterns for API + state + error handling
+- enough structure without over-engineering

@@ -55,12 +55,13 @@ extension ProductEventPatterns on ProductEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _ProductsStarted value)?  productsStarted,TResult Function( _ProductsRefreshed value)?  productsRefreshed,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _ProductsStarted value)?  productsStarted,TResult Function( _ProductsRefreshed value)?  productsRefreshed,TResult Function( _ProductsRequested value)?  productsRequested,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _ProductsStarted() when productsStarted != null:
 return productsStarted(_that);case _ProductsRefreshed() when productsRefreshed != null:
-return productsRefreshed(_that);case _:
+return productsRefreshed(_that);case _ProductsRequested() when productsRequested != null:
+return productsRequested(_that);case _:
   return orElse();
 
 }
@@ -78,12 +79,13 @@ return productsRefreshed(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _ProductsStarted value)  productsStarted,required TResult Function( _ProductsRefreshed value)  productsRefreshed,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _ProductsStarted value)  productsStarted,required TResult Function( _ProductsRefreshed value)  productsRefreshed,required TResult Function( _ProductsRequested value)  productsRequested,}){
 final _that = this;
 switch (_that) {
 case _ProductsStarted():
 return productsStarted(_that);case _ProductsRefreshed():
-return productsRefreshed(_that);case _:
+return productsRefreshed(_that);case _ProductsRequested():
+return productsRequested(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -100,12 +102,13 @@ return productsRefreshed(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _ProductsStarted value)?  productsStarted,TResult? Function( _ProductsRefreshed value)?  productsRefreshed,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _ProductsStarted value)?  productsStarted,TResult? Function( _ProductsRefreshed value)?  productsRefreshed,TResult? Function( _ProductsRequested value)?  productsRequested,}){
 final _that = this;
 switch (_that) {
 case _ProductsStarted() when productsStarted != null:
 return productsStarted(_that);case _ProductsRefreshed() when productsRefreshed != null:
-return productsRefreshed(_that);case _:
+return productsRefreshed(_that);case _ProductsRequested() when productsRequested != null:
+return productsRequested(_that);case _:
   return null;
 
 }
@@ -122,11 +125,12 @@ return productsRefreshed(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  productsStarted,TResult Function()?  productsRefreshed,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  productsStarted,TResult Function()?  productsRefreshed,TResult Function( String? query,  String? sortBy,  String? sortOrder,  bool loadMore)?  productsRequested,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductsStarted() when productsStarted != null:
 return productsStarted();case _ProductsRefreshed() when productsRefreshed != null:
-return productsRefreshed();case _:
+return productsRefreshed();case _ProductsRequested() when productsRequested != null:
+return productsRequested(_that.query,_that.sortBy,_that.sortOrder,_that.loadMore);case _:
   return orElse();
 
 }
@@ -144,11 +148,12 @@ return productsRefreshed();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  productsStarted,required TResult Function()  productsRefreshed,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  productsStarted,required TResult Function()  productsRefreshed,required TResult Function( String? query,  String? sortBy,  String? sortOrder,  bool loadMore)  productsRequested,}) {final _that = this;
 switch (_that) {
 case _ProductsStarted():
 return productsStarted();case _ProductsRefreshed():
-return productsRefreshed();case _:
+return productsRefreshed();case _ProductsRequested():
+return productsRequested(_that.query,_that.sortBy,_that.sortOrder,_that.loadMore);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -165,11 +170,12 @@ return productsRefreshed();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  productsStarted,TResult? Function()?  productsRefreshed,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  productsStarted,TResult? Function()?  productsRefreshed,TResult? Function( String? query,  String? sortBy,  String? sortOrder,  bool loadMore)?  productsRequested,}) {final _that = this;
 switch (_that) {
 case _ProductsStarted() when productsStarted != null:
 return productsStarted();case _ProductsRefreshed() when productsRefreshed != null:
-return productsRefreshed();case _:
+return productsRefreshed();case _ProductsRequested() when productsRequested != null:
+return productsRequested(_that.query,_that.sortBy,_that.sortOrder,_that.loadMore);case _:
   return null;
 
 }
@@ -240,5 +246,77 @@ String toString() {
 
 
 
+
+/// @nodoc
+
+
+class _ProductsRequested implements ProductEvent {
+  const _ProductsRequested({this.query, this.sortBy, this.sortOrder, this.loadMore = false});
+  
+
+ final  String? query;
+ final  String? sortBy;
+ final  String? sortOrder;
+@JsonKey() final  bool loadMore;
+
+/// Create a copy of ProductEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ProductsRequestedCopyWith<_ProductsRequested> get copyWith => __$ProductsRequestedCopyWithImpl<_ProductsRequested>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductsRequested&&(identical(other.query, query) || other.query == query)&&(identical(other.sortBy, sortBy) || other.sortBy == sortBy)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.loadMore, loadMore) || other.loadMore == loadMore));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,query,sortBy,sortOrder,loadMore);
+
+@override
+String toString() {
+  return 'ProductEvent.productsRequested(query: $query, sortBy: $sortBy, sortOrder: $sortOrder, loadMore: $loadMore)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ProductsRequestedCopyWith<$Res> implements $ProductEventCopyWith<$Res> {
+  factory _$ProductsRequestedCopyWith(_ProductsRequested value, $Res Function(_ProductsRequested) _then) = __$ProductsRequestedCopyWithImpl;
+@useResult
+$Res call({
+ String? query, String? sortBy, String? sortOrder, bool loadMore
+});
+
+
+
+
+}
+/// @nodoc
+class __$ProductsRequestedCopyWithImpl<$Res>
+    implements _$ProductsRequestedCopyWith<$Res> {
+  __$ProductsRequestedCopyWithImpl(this._self, this._then);
+
+  final _ProductsRequested _self;
+  final $Res Function(_ProductsRequested) _then;
+
+/// Create a copy of ProductEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? query = freezed,Object? sortBy = freezed,Object? sortOrder = freezed,Object? loadMore = null,}) {
+  return _then(_ProductsRequested(
+query: freezed == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
+as String?,sortBy: freezed == sortBy ? _self.sortBy : sortBy // ignore: cast_nullable_to_non_nullable
+as String?,sortOrder: freezed == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
+as String?,loadMore: null == loadMore ? _self.loadMore : loadMore // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
 
 // dart format on

@@ -46,8 +46,9 @@ AppError _mapDioError(DioException e) {
 AppError _mapStatusCode(Response? response) {
   final statusCode = response?.statusCode;
   final body = response?.data;
-  final message = body?['message'] as String?;
-  final code = body?['code'] as String?;
+  final bodyMap = body is Map ? Map<String, dynamic>.from(body) : null;
+  final message = bodyMap?['message'] as String?;
+  final code = bodyMap?['code'] as String?;
 
   return switch (statusCode) {
     400 => ValidationError(message: message, code: code),

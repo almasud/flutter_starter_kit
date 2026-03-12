@@ -1,19 +1,17 @@
-class AuthSessionDto {
-  const AuthSessionDto({
-    required this.userId,
-    required this.username,
-    required this.token,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final int userId;
-  final String username;
-  final String token;
+part 'auth_session_dto.freezed.dart';
+part 'auth_session_dto.g.dart';
 
-  factory AuthSessionDto.fromJson(Map<String, dynamic> json) {
-    return AuthSessionDto(
-      userId: json['id'] as int? ?? 0,
-      username: json['username'] as String? ?? '',
-      token: (json['accessToken'] ?? json['token'] ?? '') as String,
-    );
-  }
+@freezed
+abstract class AuthSessionDto with _$AuthSessionDto {
+  const factory AuthSessionDto({
+    @JsonKey(name: 'id') @Default(0) int userId,
+    @Default('') String username,
+    @JsonKey(name: 'accessToken') @Default('') String accessToken,
+    @Default('') String token,
+  }) = _AuthSessionDto;
+
+  factory AuthSessionDto.fromJson(Map<String, dynamic> json) =>
+      _$AuthSessionDtoFromJson(json);
 }
