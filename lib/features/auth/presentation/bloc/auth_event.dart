@@ -1,10 +1,11 @@
-abstract class AuthEvent {
-  const AuthEvent();
-}
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class LoginSubmitted extends AuthEvent {
-  const LoginSubmitted({required this.username, required this.password});
+part 'auth_event.freezed.dart';
 
-  final String username;
-  final String password;
+@freezed
+abstract class AuthEvent with _$AuthEvent {
+  const factory AuthEvent.loginSubmitted({
+    required String username,
+    required String password,
+  }) = LoginSubmitted;
 }

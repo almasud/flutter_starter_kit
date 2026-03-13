@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../router/app_router.dart';
 
-class AppToolBar extends StatefulWidget implements PreferredSizeWidget {
+class AppToolBar extends StatelessWidget implements PreferredSizeWidget {
   const AppToolBar({
     super.key,
     required this.title,
@@ -18,34 +18,35 @@ class AppToolBar extends StatefulWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
 
   @override
-  State<AppToolBar> createState() => _AppToolBarState();
-
-  @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
-}
 
-class _AppToolBarState extends State<AppToolBar> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        color: widget.backgroundColor ?? Theme.of(context).colorScheme.primary,
+        color: backgroundColor ?? Theme.of(context).colorScheme.primary,
         width: double.infinity,
         height: kToolbarHeight,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              if (widget.showBackButton)
+              if (showBackButton)
                 IconButton(
-                  onPressed: () => context.go(AppRouter.productPath),
-                  icon: Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go(AppRouter.loginPath);
+                    }
+                  },
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
                 )
               else
-                SizedBox(),
+                const SizedBox(),
               Expanded(
                 child: Text(
-                  widget.title,
+                  title,
                   style: TextTheme.of(context).titleLarge?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w500,
@@ -53,6 +54,7 @@ class _AppToolBarState extends State<AppToolBar> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+              if (actions != null) ...actions!,
             ],
           ),
         ),
