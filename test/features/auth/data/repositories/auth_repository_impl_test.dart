@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_starter_kit/core/domain/models/api_result.dart';
 import 'package:flutter_starter_kit/core/domain/models/app_error.dart';
 import 'package:flutter_starter_kit/features/auth/data/datasources/auth_datasource.dart';
-import 'package:flutter_starter_kit/features/auth/data/local/session_storage.dart';
+import 'package:flutter_starter_kit/features/auth/data/local/auth_session_store.dart';
 import 'package:flutter_starter_kit/features/auth/data/remote/model/dtos/auth_session_dto.dart';
 import 'package:flutter_starter_kit/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:flutter_starter_kit/features/auth/domain/models/auth_session.dart';
@@ -21,7 +21,7 @@ class _FakeAuthDatasource extends AuthDatasource {
   }
 }
 
-class _FakeSessionStorage extends SessionStorage {
+class _FakeAuthSessionStore extends AuthSessionStore {
   AuthSession? session;
 
   @override
@@ -43,7 +43,7 @@ class _FakeSessionStorage extends SessionStorage {
 void main() {
   group('AuthRepositoryImpl', () {
     test('returns mapped AuthSession on success and stores session', () async {
-      final sessionStorage = _FakeSessionStorage();
+      final sessionStorage = _FakeAuthSessionStore();
       final datasource = _FakeAuthDatasource(
         const Success(
           AuthSessionDto(userId: 1, username: 'demo', token: 'dummy-token'),
@@ -66,7 +66,7 @@ void main() {
 
     test('forwards AppError on failure', () async {
       const appError = UnauthorizedError(message: 'Invalid credentials');
-      final sessionStorage = _FakeSessionStorage();
+      final sessionStorage = _FakeAuthSessionStore();
       final datasource = _FakeAuthDatasource(const Failure(appError));
       final repository = AuthRepositoryImpl(datasource, sessionStorage);
 
@@ -82,7 +82,7 @@ void main() {
     });
 
     test('returns saved session when present', () async {
-      final sessionStorage = _FakeSessionStorage()
+      final sessionStorage = _FakeAuthSessionStore()
         ..session = const AuthSession(
           userId: 7,
           username: 'saved',

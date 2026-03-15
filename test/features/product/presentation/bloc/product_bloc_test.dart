@@ -1,9 +1,12 @@
 import 'package:flutter_starter_kit/core/domain/models/api_result.dart';
 import 'package:flutter_starter_kit/core/domain/models/app_error.dart';
+import 'package:flutter_starter_kit/features/product/domain/models/cached_product_list.dart';
 import 'package:flutter_starter_kit/features/product/domain/models/product.dart';
 import 'package:flutter_starter_kit/features/product/domain/models/product_list.dart';
 import 'package:flutter_starter_kit/features/product/domain/repositories/product_repository.dart';
+import 'package:flutter_starter_kit/features/product/domain/usecases/get_cached_products_usecase.dart';
 import 'package:flutter_starter_kit/features/product/domain/usecases/get_products_usecase.dart';
+import 'package:flutter_starter_kit/features/product/domain/usecases/refresh_products_usecase.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_bloc.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_event.dart';
 import 'package:flutter_starter_kit/features/product/presentation/bloc/product_state.dart';
@@ -22,6 +25,9 @@ class _FakeProductRepository extends ProductRepository {
   _handler;
 
   @override
+  Future<CachedProductList?> getCachedProducts() async => null;
+
+  @override
   Future<ApiResult<ProductList, AppError>> getProducts({
     int skip = 0,
     int limit = 20,
@@ -36,6 +42,24 @@ class _FakeProductRepository extends ProductRepository {
       sortBy: sortBy,
       sortOrder: sortOrder,
     );
+  }
+
+  @override
+  Future<ApiResult<CachedProductList, AppError>> refreshProducts() async {
+    final result = await _handler(
+      skip: 0,
+      limit: 20,
+      query: '',
+      sortBy: 'title',
+      sortOrder: 'asc',
+    );
+
+    return switch (result) {
+      Success(:final data) => Success(
+        CachedProductList(data: data, fetchedAt: DateTime(2026, 3, 12)),
+      ),
+      Failure(:final error) => Failure(error),
+    };
   }
 }
 
@@ -79,7 +103,11 @@ void main() {
           ),
         );
       });
-      final bloc = ProductBloc(GetProductsUseCase(repository));
+      final bloc = ProductBloc(
+        GetCachedProductsUseCase(repository),
+        GetProductsUseCase(repository),
+        RefreshProductsUseCase(repository),
+      );
 
       bloc.add(
         const ProductEvent.productsRequested(
@@ -139,7 +167,11 @@ void main() {
           ),
         );
       });
-      final bloc = ProductBloc(GetProductsUseCase(repository));
+      final bloc = ProductBloc(
+        GetCachedProductsUseCase(repository),
+        GetProductsUseCase(repository),
+        RefreshProductsUseCase(repository),
+      );
 
       bloc.add(const ProductEvent.productsRequested());
       await expectLater(

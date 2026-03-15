@@ -43,6 +43,12 @@ class _FakeAuthRepository extends AuthRepository {
   }) {
     return _handler(username: username, password: password);
   }
+
+  @override
+  Future<AuthSession?> getSavedSession() async => null;
+
+  @override
+  Future<void> clearSavedSession() async {}
 }
 
 void main() {
