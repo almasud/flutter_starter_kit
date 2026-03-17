@@ -33,19 +33,25 @@ Most starter projects are either too thin to be useful or so opinionated that th
 
 Those are valid additions, but they are left out so the starter stays understandable and easy to extend.
 
+## Demo
+
+Place the recorded demo GIF at `docs/demo/app_demo.gif`.
+
+<p align="center">
+  <img src="docs/demo/app_demo.gif" width="360" alt="App demo" />
+</p>
+
 ## Screens
 
 - Login
 - Product list
 - Product list with search and sorting
 
-| Login | Products |
-|---|---|
-| <img src="docs/screenshots/login.png" width="240" alt="Login" /> | <img src="docs/screenshots/products.png" width="240" alt="Products" /> |
-
-| Search + Sort |
-|---|
-| <img src="docs/screenshots/products_search_sort.png" width="320" alt="Search and Sort" /> |
+<p align="center">
+  <img src="docs/screenshots/login.png" width="220" alt="Login" />
+  <img src="docs/screenshots/products.png" width="220" alt="Products" />
+  <img src="docs/screenshots/products_search_sort.png" width="220" alt="Search and Sort" />
+</p>
 
 ## Architecture
 

@@ -1,0 +1,16 @@
+# Keep GitHub language stats focused on actual Flutter source.
+build/** linguist-vendored
+.dart_tool/** linguist-vendored
+
+# Platform scaffolding should not dominate language detection.
+android/** linguist-vendored
+ios/** linguist-vendored
+linux/** linguist-vendored
+macos/** linguist-vendored
+windows/** linguist-vendored
+
+# Generated Dart files should not count as primary authored code.
+lib/**/*.g.dart linguist-generated=true
+lib/**/*.freezed.dart linguist-generated=true
+lib/**/*.gr.dart linguist-generated=true
+lib/**/*.mocks.dart linguist-generated=true
