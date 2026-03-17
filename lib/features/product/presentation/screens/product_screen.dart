@@ -51,7 +51,7 @@ class _ProductScreenState extends State<ProductScreen> {
       child: Scaffold(
         appBar: AppToolBar(
           title: ProductStrings.products,
-          subtitle: 'Search, sort, cache, and refresh in one flow',
+          subtitle: 'Browse and manage the product list',
           showBackButton: false,
           actions: [
             IconButton.filledTonal(
@@ -260,14 +260,14 @@ class _ProductSummaryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Catalog overview',
+              'Product summary',
               style: theme.textTheme.titleLarge,
             ),
             const SizedBox(height: 6),
             Text(
               state.query.isEmpty
-                  ? 'Browse the default catalog, refresh cached data, or change the sort order.'
-                  : 'Showing results for "${state.query}" sorted by ${state.sortBy} (${state.sortOrder.toUpperCase()}).',
+                  ? 'Browse all products, update the list, or change the sort order.'
+                  : 'Showing results for "${state.query}" sorted by ${state.sortBy} in ${state.sortOrder.toUpperCase()} order.',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -331,7 +331,7 @@ class _FilterPanel extends StatelessWidget {
             Text('Find products', style: theme.textTheme.titleMedium),
             const SizedBox(height: 4),
             Text(
-              'Search by keyword and refine the result set without leaving the page.',
+              'Search by keyword and adjust the current result list.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -362,10 +362,40 @@ class _FilterPanel extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(ProductStrings.sort, style: theme.textTheme.labelLarge),
-                const Spacer(),
-                FilledButton.tonalIcon(
+                Expanded(
+                  child: Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: _sortLabels.entries.map((entry) {
+                      final isSelected = state.sortBy == entry.key;
+                      return ChoiceChip(
+                        label: Text(entry.value),
+                        selected: isSelected,
+                        avatar: isSelected
+                            ? Icon(
+                                Icons.check_rounded,
+                                size: 18,
+                                color: colorScheme.primary,
+                              )
+                            : null,
+                        onSelected: (selected) {
+                          if (!selected) return;
+                          context.read<ProductBloc>().add(
+                            ProductEvent.productsRequested(
+                              query: state.query,
+                              sortBy: entry.key,
+                              sortOrder: state.sortOrder,
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                IconButton.filledTonal(
                   onPressed: () {
                     context.read<ProductBloc>().add(
                       ProductEvent.productsRequested(
@@ -375,43 +405,16 @@ class _FilterPanel extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.swap_vert_rounded),
-                  label: Text(
+                  tooltip: state.sortOrder == 'asc'
+                      ? ProductStrings.ascendingOrder
+                      : ProductStrings.descendingOrder,
+                  icon: Icon(
                     state.sortOrder == 'asc'
-                        ? ProductStrings.asc
-                        : ProductStrings.desc,
+                        ? Icons.sort_by_alpha_rounded
+                        : Icons.sort_rounded,
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: _sortLabels.entries.map((entry) {
-                final isSelected = state.sortBy == entry.key;
-                return ChoiceChip(
-                  label: Text(entry.value),
-                  selected: isSelected,
-                  avatar: isSelected
-                      ? Icon(
-                          Icons.check_rounded,
-                          size: 18,
-                          color: colorScheme.primary,
-                        )
-                      : null,
-                  onSelected: (selected) {
-                    if (!selected) return;
-                    context.read<ProductBloc>().add(
-                      ProductEvent.productsRequested(
-                        query: state.query,
-                        sortBy: entry.key,
-                        sortOrder: state.sortOrder,
-                      ),
-                    );
-                  },
-                );
-              }).toList(),
             ),
           ],
         ),

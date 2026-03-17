@@ -172,7 +172,7 @@ class _IntroPanel extends StatelessWidget {
               ),
             ),
             child: Text(
-              'Senior-ready mobile foundation',
+              'Secure account access',
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colorScheme.primary,
               ),
@@ -180,12 +180,12 @@ class _IntroPanel extends StatelessWidget {
           ),
           const SizedBox(height: 22),
           Text(
-            'Clean architecture with a UI that now feels intentional.',
+            'Access your workspace and continue where you left off.',
             style: theme.textTheme.headlineLarge?.copyWith(fontSize: 42),
           ),
           const SizedBox(height: 16),
           Text(
-            'Use the sample account to move through the auth flow, restore a saved session, and inspect a product list with search, sorting, refresh, and local cache behavior.',
+            'Sign in with your account details to continue to the product dashboard. Your session is saved on this device so you can come back without signing in again.',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -197,15 +197,15 @@ class _IntroPanel extends StatelessWidget {
             children: const [
               _HighlightChip(
                 icon: Icons.shield_outlined,
-                label: 'Secure session restore',
+                label: 'Session restore',
               ),
               _HighlightChip(
                 icon: Icons.layers_outlined,
-                label: 'Feature-first modules',
+                label: 'Fast sign-in',
               ),
               _HighlightChip(
                 icon: Icons.sync_rounded,
-                label: 'Cached list refresh',
+                label: 'Saved session',
               ),
             ],
           ),
