@@ -1,29 +1,25 @@
 # Flutter Starter Kit
 
-Flutter starter template designed for rapid feature delivery with
-clear architecture and production-style conventions.
+Production-oriented Flutter starter kit with clean feature boundaries, sample auth and product flows, offline-first product caching, and test coverage for core business logic.
 
-## Overview
+## What This Project Includes
 
-This project is a clean-architecture Flutter starter kit with two sample
-features:
+- Feature-first structure with `data`, `domain`, and `presentation` layers
+- Login flow backed by DummyJSON `POST /auth/login`
+- Persisted auth session using `flutter_secure_storage`
+- Protected navigation using `go_router` and an auth guard
+- Product listing backed by DummyJSON `GET /products` and `GET /products/search`
+- Search, sorting, order toggle, pull-to-refresh, and pagination
+- Local product cache using Drift for the default listing
+- Dependency injection with `get_it`
+- Immutable models and states with `freezed` and `json_serializable`
+- Unit tests for repositories, mappers, and BLoCs
 
-- `auth`: login flow with persisted secure session
-- `product`: list flow with keyword search, sort, order toggle, pull-to-refresh,
-  and pagination
+## Screens
 
-It is intentionally structured to help you start coding quickly while
-demonstrating scalable engineering practices.
-
-## Screenshots
-
-Screenshots are loaded from `docs/screenshots/`:
-
-- `login.png`
-- `products.png`
-- `products_search_sort.png`
-
-Current files are placeholders; replace them with real app captures.
+- Login
+- Product list
+- Product list with search and sorting
 
 | Login | Products |
 |---|---|
@@ -35,95 +31,105 @@ Current files are placeholders; replace them with real app captures.
 
 ## Architecture
 
-### Layered design per feature
+Each feature follows the same layered split:
 
-- `data`: DTOs, datasources, repository implementations, mappers
-- `domain`: models, repository contracts, use cases
-- `presentation`: UI, BLoC, events, states
+- `data`: remote/local datasources, DTOs, repository implementations, mappers
+- `domain`: entities/models, repository contracts, use cases
+- `presentation`: screens, widgets, BLoCs, events, states
 
-### Core modules
+Shared app concerns live under `lib/core`:
 
-- `core/config`: environment/flavor setup (`APP_FLAVOR`, `API_BASE_URL`)
-- `core/data/remote`: Dio client, interceptors, safe API call wrapper
-- `core/di`: dependency registration with `get_it`
-- `core/presentation/router`: `go_router` routes and auth guard
-- `core/domain/models`: typed `ApiResult` and `AppError`
+- `config`: flavor and API base URL resolution
+- `data/remote`: Dio client and safe API wrapper
+- `data/local`: Drift database
+- `di`: service registration
+- `presentation/router`: route definitions and auth redirect logic
+- `domain/models`: shared result and error types
 
 ## Project Structure
 
 ```text
-.
-├── lib
-│   ├── app.dart
-│   ├── main.dart
-│   ├── core
-│   │   ├── config
-│   │   ├── data
-│   │   │   └── remote
-│   │   ├── di
-│   │   ├── domain
-│   │   │   └── models
-│   │   └── presentation
-│   │       ├── constants
-│   │       ├── router
-│   │       ├── theme
-│   │       └── widgets
-│   └── features
-│       ├── auth
-│       │   ├── data
-│       │   ├── domain
-│       │   └── presentation
-│       └── product
-│           ├── data
-│           ├── domain
-│           └── presentation
-├── test
-│   └── features
-│       ├── auth
-│       └── product
-└── docs
-    └── screenshots
+lib/
+  app.dart
+  main.dart
+  core/
+    config/
+    data/
+      local/
+      remote/
+    di/
+    domain/models/
+    presentation/
+      constants/
+      router/
+      theme/
+      widgets/
+  features/
+    auth/
+      data/
+        datasources/
+        local/
+        mappers/
+        remote/model/dtos/
+        repositories/
+      domain/
+        models/
+        repositories/
+        usecases/
+      presentation/
+        bloc/
+        constants/
+        screens/
+    product/
+      data/
+        datasources/
+        local/
+          database/
+          datasources/
+          mappers/
+          model/
+        mappers/
+        remote/model/dtos/
+        repositories/
+      domain/
+        models/
+        repositories/
+        usecases/
+      presentation/
+        bloc/
+        constants/
+        screens/
+        widgets/
+test/
+  features/
+    auth/
+    product/
 ```
 
-## Tech Stack / Libraries
-
-- Routing: `go_router`
-- State management: `flutter_bloc`
-- Networking: `dio`
-- Dependency injection: `get_it`
-- Secure storage: `flutter_secure_storage`
-- Model generation: `freezed`, `json_serializable`
-- Skeleton loading: `shimmer`
-- Testing: `flutter_test`
-
-## Implemented Capabilities
+## Feature Notes
 
 ### Auth
 
-- Login request (`POST /auth/login`)
-- Form validation
-- Secure session persistence
-- Guarded route redirect (unauthenticated -> login)
+- The app starts at `/login`
+- Demo credentials are predeclared in the UI: `emilys / emilyspass`
+- Successful login stores the session in secure storage
+- `AuthGuard` restores the saved session on startup
+- Logged-in users are redirected to `/product`
 
 ### Product
 
-- Product list request (`GET /products`)
-- Keyword search with debounce
-- Sort field chips (`Title`, `Price`, `Rating`)
-- Order toggle (`ASC` / `DESC`)
-- Pull-to-refresh and load-more pagination
-- Loading, success, and failure states
-
-## Error Handling
-
-- Unified result model via `ApiResult<Success|Failure>`
-- Typed error mapping (`NetworkError`, `ValidationError`, `UnauthorizedError`,
-  `ServerError`, `UnknownError`)
-- Centralized safe API wrapper (`safe_api_call.dart`)
+- Default listing loads cached data first when available
+- A background refresh updates the cache from the API
+- If refresh fails but cache exists, the UI keeps showing stale data with an error banner
+- Search requests use `/products/search`
+- Sorting supports `title`, `price`, and `rating`
+- Load-more paging is handled in `ProductBloc`
 
 ## Environment Configuration
 
-Set flavor via `dart-define`:
+The app reads compile-time values from `dart-define`.
+
+### Flavor
 
 ```bash
 flutter run --dart-define=APP_FLAVOR=dev
@@ -131,24 +137,62 @@ flutter run --dart-define=APP_FLAVOR=staging
 flutter run --dart-define=APP_FLAVOR=prod
 ```
 
-Override base URL:
+Current defaults:
+
+- `dev` -> `https://dummyjson.com`
+- `staging` -> `https://dummyjson.com`
+- `prod` -> `https://dummyjson.com`
+
+### Override API base URL
 
 ```bash
 flutter run --dart-define=API_BASE_URL=https://api.example.com
 ```
 
-## Setup
+## Tech Stack
+
+- Flutter
+- `flutter_bloc`
+- `go_router`
+- `dio`
+- `get_it`
+- `drift` and `drift_flutter`
+- `flutter_secure_storage`
+- `freezed`
+- `json_serializable`
+- `shimmer`
+
+## Getting Started
 
 ### Requirements
 
-- Flutter SDK (stable)
+- Flutter SDK
 - Dart SDK `^3.11.0`
 
-### Install and run
+### Install dependencies
 
 ```bash
 flutter pub get
+```
+
+### Run the app
+
+```bash
 flutter run
+```
+
+With an explicit flavor:
+
+```bash
+flutter run --dart-define=APP_FLAVOR=dev
+```
+
+## Code Generation
+
+Run this after changing `freezed`, `json_serializable`, or Drift-backed models:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ## Quality Checks
@@ -158,19 +202,16 @@ flutter analyze
 flutter test
 ```
 
-## Code Generation
+## Tests Included
 
-Run when `freezed`/`json_serializable` models or states change:
+- Auth repository tests
+- Auth BLoC tests
+- Product mapper tests
+- Product repository tests
+- Product BLoC tests
 
-```bash
-dart run build_runner build --delete-conflicting-outputs
-```
+## Suggested Next Steps
 
-## Notes
-
-This template is optimized to start new app features quickly:
-
-- clear feature boundaries
-- testable architecture
-- practical patterns for API + state + error handling
-- enough structure without over-engineering
+- Add environment-specific endpoints instead of using DummyJSON for every flavor
+- Expand feature modules from the provided auth and product examples
+- Add integration tests for navigation and persisted session restoration
