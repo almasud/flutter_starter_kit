@@ -2,6 +2,14 @@
 
 Production-oriented Flutter starter kit with clean feature boundaries, sample auth and product flows, offline-first product caching, and test coverage for core business logic.
 
+## Why This Exists
+
+Most starter projects are either too thin to be useful or so opinionated that they are hard to adapt. This project aims for the middle:
+
+- enough structure to start real feature work quickly
+- enough examples to demonstrate app flow, state, persistence, and testing
+- enough restraint to stay reusable instead of becoming framework ceremony
+
 ## What This Project Includes
 
 - Feature-first structure with `data`, `domain`, and `presentation` layers
@@ -14,6 +22,16 @@ Production-oriented Flutter starter kit with clean feature boundaries, sample au
 - Dependency injection with `get_it`
 - Immutable models and states with `freezed` and `json_serializable`
 - Unit tests for repositories, mappers, and BLoCs
+
+## What It Intentionally Does Not Include
+
+- backend ownership or production API contracts
+- analytics, crash reporting, or remote config wiring
+- design system token packages or multi-brand theming
+- CI/CD workflows
+- integration and end-to-end tests
+
+Those are valid additions, but they are left out so the starter stays understandable and easy to extend.
 
 ## Screens
 
@@ -45,6 +63,24 @@ Shared app concerns live under `lib/core`:
 - `di`: service registration
 - `presentation/router`: route definitions and auth redirect logic
 - `domain/models`: shared result and error types
+
+## Request Flow At A Glance
+
+```text
+Screen -> BLoC -> UseCase -> Repository -> DataSource
+                                   |-> Remote API via Dio
+                                   |-> Local storage via Drift / Secure Storage
+```
+
+For the default product listing, the flow is slightly richer:
+
+```text
+ProductScreen -> ProductBloc
+  -> load cached list first
+  -> refresh from API
+  -> update Drift cache
+  -> show stale cached data if refresh fails
+```
 
 ## Project Structure
 
@@ -125,6 +161,18 @@ test/
 - Sorting supports `title`, `price`, and `rating`
 - Load-more paging is handled in `ProductBloc`
 
+## Creating A New Feature
+
+Use the existing `auth` and `product` modules as references.
+
+1. Create `data`, `domain`, and `presentation` folders under `lib/features/<feature_name>/`
+2. Define the repository contract and use cases in `domain/`
+3. Implement datasources, DTOs, mappers, and repository logic in `data/`
+4. Build the screen and BLoC in `presentation/`
+5. Register dependencies in `lib/core/di/injection.dart`
+6. Add routing in `lib/core/presentation/router/app_router.dart` if the feature has a screen
+7. Add focused tests under `test/features/<feature_name>/`
+
 ## Environment Configuration
 
 The app reads compile-time values from `dart-define`.
@@ -175,6 +223,15 @@ flutter run --dart-define=API_BASE_URL=https://api.example.com
 flutter pub get
 ```
 
+### iOS note
+
+If CocoaPods reports an outdated specs repository, run:
+
+```bash
+cd ios
+pod install --repo-update
+```
+
 ### Run the app
 
 ```bash
@@ -215,3 +272,11 @@ flutter test
 - Add environment-specific endpoints instead of using DummyJSON for every flavor
 - Expand feature modules from the provided auth and product examples
 - Add integration tests for navigation and persisted session restoration
+
+## Roadmap Ideas
+
+- logout use case and session-expiry handling
+- reusable pagination primitives
+- richer offline strategy for filtered product queries
+- feature scaffolding script or template
+- CI checks for analyze, test, and code generation
